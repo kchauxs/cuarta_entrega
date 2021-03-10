@@ -155,6 +155,17 @@ create_dataset(image_directory_test,dataset_test,label_test)
 
 
 x = 2
+img = cv2.cvtColor(dataset_test[x],cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+
+im = Image.open(image_directory_test+'knife_2.jpg')
+
+a = im.rotate(45).show()
+
+
+pred_individual_test = model.predict(np.expand_dims(dataset_test[x],axis = 0))
+
+
 plt.imshow(dataset_test[x])
 pred_individual_test = model.predict(np.expand_dims(dataset_test[x],axis = 0))
 
