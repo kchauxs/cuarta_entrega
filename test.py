@@ -57,7 +57,7 @@ def create_dataset(img_folder):
                 #img_array = cv2.cvtColor(img_array,cv2.COLOR_RGB2GRAY)
                 
                 #Cambiamos su tamanio
-                new_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+                new_array =  
                 
                 #agregamos a nuestro base de datos de entrenamiento.
                 training_data.append([new_array])
@@ -201,28 +201,6 @@ plt.plot(history.history['val_accuracy'])
 
 
 #############################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
