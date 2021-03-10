@@ -1,5 +1,5 @@
 data
 codigos
-modelo
-modelo_prueba
-test
+modelo.py
+modelo_prueba.py
+test.py
