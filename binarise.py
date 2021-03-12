@@ -7,19 +7,21 @@ Created on Thu Mar 11 08:49:18 2021
 
 import os
 import cv2
-from tqdm import tqdm
-import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.model_selection import train_test_split
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from tqdm import tqdm
+
 from keras.utils import to_categorical
-
-
-
 from keras.layers import Convolution2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Dropout
 from keras.models import Sequential
-from keras.models import Model
 
-SIZE=80
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+
+SIZE = 80
 
 PATH = 'C:/Users/k44sa/Documents/python/anaconda/Cuarta_entrega/data/testing/'
 dataset = []  # Dataset  
@@ -45,12 +47,20 @@ def create_dataset(img_folder,dataset_img,label_class):
         if target != -1:
           
             try:   
-                #print(img[:5])
+        
+                #CARGAMOS LA IMAGEN
                 image = cv2.imread(img_folder+img)
+                #CAMBIAMOS EL FORMATO A RGB
                 image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+                #SUAVIZAMOS LA IMAGEN
+                image = cv2.GaussianBlur(image,(3,3),0)
+                #CONVERTIOMS A ESCALA DE GRICES
                 image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+                #BINARIZAMOS
                 ret,image = cv2.threshold(image,127,255,cv2.THRESH_BINARY)
+                #CAMBIAMOS EL TAMAÑO
                 new_array = cv2.resize(image, (SIZE, SIZE)) 
+                #AGREGAMOS AL DATASET
                 dataset_img.append(new_array) 
                 label_class.append(target)
             except Exception:
@@ -74,7 +84,7 @@ df = df.reshape(df.shape[0], df.shape[1], df.shape[2], 1)
 #dtf /= 255
 
 
-X_train, X_test, y_train, y_test = train_test_split(df,to_categorical(np.array(label)), test_size = 0.20, random_state = 0)
+X_train, X_test, y_train, y_test = train_test_split(df,to_categorical(np.array(label)), test_size = 0.25, random_state = 0)
 
 
 #############################################################################
@@ -98,6 +108,7 @@ model.add(Dense(activation = 'relu', units=256))
 model.add(BatchNormalization(axis = -1))
 model.add(Dropout(0.2))
 model.add(Dense(activation = 'sigmoid', units=3))
+#model.add(Dense(activation = 'softmax', units=3))
 model.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
 print(model.summary())
 
@@ -108,7 +119,7 @@ history = model.fit(np.array(X_train),
                     y_train, 
                     batch_size = 64, 
                     verbose = 1, 
-                    epochs = 15,  
+                    epochs = 20,  
                     validation_split = 0.1,
                     shuffle = False)
 
@@ -121,7 +132,7 @@ history = model.fit(np.array(X_train),
 #                           RESULTADOS DE ENTRENAMEINTO
 #############################################################################
 
-print("Test_Accuracy: {:.2f}%".format(model.evaluate(np.array(X_test), np.array(y_test))[1]*100))
+print("Test Accuracy: {:.2f}%".format(model.evaluate(np.array(X_test), np.array(y_test))[1]*100))
 
 plt.plot(history.history['val_loss'])
 plt.plot(history.history['val_accuracy'])
@@ -129,8 +140,7 @@ plt.plot(history.history['val_accuracy'])
 #target_dict = {k: v for v, k in enumerate(np.unique(label))}
 
 
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
+
 
 prediction = model.predict(np.array(X_test))
 y_test_matrix = [np.argmax(t) for t in y_test]
@@ -141,7 +151,7 @@ sns.heatmap(confusion,annot=True,fmt="d",cbar=False)
 plt.show()
 
 
-x = 144
+x = 155
 plt.imshow(X_test[x],cmap='gray')
 
 pred_individual = model.predict(np.expand_dims(X_test[x],axis = 0))

@@ -1,6 +1,7 @@
 data
 codigos
-modelo.py
-modelo_prueba.py
-test.py
 modelo
+procesamiento_img
+
+dataset_model_binary.h5
+dataset_model.h5
